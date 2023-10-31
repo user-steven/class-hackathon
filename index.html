@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sentiment Analysis</title>
+</head>
+<body>
+    <h1>Sentiment Analysis</h1>
+    <form id="sentimentForm">
+        <label for="sentence">Enter a sentence: </label>
+        <input type="text" id="sentence" name="sentence">
+        <input type="submit" value="Analyze">
+    </form>
+    <div id="result">
+        <!-- The result will be displayed here -->
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("sentimentForm");
+            const resultDiv = document.getElementById("result");
+
+            form.addEventListener("submit", function (event) {
+                event.preventDefault();
+
+                const sentence = document.getElementById("sentence").value;
+                if (sentence) {
+                    fetch(`/analyze?sentence=${encodeURIComponent(sentence)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.length > 0) {
+                                const sentiment = data[0];
+                                const label = sentiment.label;
+                                const score = sentiment.score;
+                                resultDiv.innerHTML = `<p><strong>Sentiment:</strong> ${label}</p><p><strong>Score:</strong> ${score}</p>`;
+                            } else {
+                                resultDiv.innerHTML = "No sentiment data available.";
+                            }
+                        })
+                        .catch(error => {
+                            resultDiv.innerHTML = "An error occurred while fetching sentiment data.";
+                            console.error(error);
+                        });
+                } else {
+                    resultDiv.innerHTML = "Please enter a sentence.";
+                }
+            });
+        });
+    </script>
+</body>
+</html>
